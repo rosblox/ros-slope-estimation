@@ -12,24 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import math
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Imu, MagneticField
+
+from slope_estimation_interfaces.srv import GetFloat32
+
 
 class SlopeEstimator(Node):
 
     def __init__(self):
         super().__init__('slope_estimator')
+        self.create_subscription(Imu, '/imu/data_raw', self.imu_callback, 3)
+        self.slope_estimation_srv = self.create_service(GetFloat32, '~/get_slope_estimate', self.service_callback)
 
-        timer_period = 1.0  # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
+    def service_callback(self, request, response):
+        response.data = self.slope
+        return response
 
-        self.get_logger().info(f'Initalization finished.')
+    def imu_callback(self, msg):
+        acc_x = msg.linear_acceleration.x
+        acc_y = msg.linear_acceleration.y
+        acc_z = msg.linear_acceleration.z
 
-
-    def timer_callback(self):
-
-        self.get_logger().info(f'Hello.')
+        self.slope = math.atan2(math.sqrt(acc_x*acc_x+acc_y*acc_y), acc_z)  
 
 
 def main(args=None):

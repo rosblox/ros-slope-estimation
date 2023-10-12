@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'ros_lsm6dsox_lis3mdl'
+package_name = 'slope_estimation'
 
 setup(
     name=package_name,
@@ -19,7 +19,7 @@ setup(
     license='BSD3',
     entry_points={
         'console_scripts': [
-                'slope_estimator = ros_slope_estimation.slope_estimator:main',
+                'slope_estimator = slope_estimation.slope_estimator:main',
         ],
     },
 )
